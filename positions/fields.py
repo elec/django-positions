@@ -147,7 +147,7 @@ class PositionField(models.IntegerField):
             raise AttributeError("%s must be accessed via instance." % self.name)
         if value is None:
             value = self.default
-        cache_name = self.get_cache_name()
+        cache_name = instance.get_cache_name()
         try:
             current, updated = getattr(instance, cache_name)
         except AttributeError:
