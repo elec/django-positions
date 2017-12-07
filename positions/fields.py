@@ -151,10 +151,6 @@ class PositionField(models.IntegerField):
             raise AttributeError("%s must be accessed via instance." % self.name)
         if value is None:
             value = self.default
-
-        from pprint import pprint
-        fly = dir(self)
-        pprint(fly)
         
         cache_name = self.get_cache_name()
 
