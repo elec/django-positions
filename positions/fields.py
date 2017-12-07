@@ -83,7 +83,7 @@ class PositionField(models.IntegerField):
         if collection_changed:
             self.remove_from_collection(previous_instance)
 
-        cache_name = self.get_cached_value()
+        cache_name = self.get_cache_name()
         current, updated = getattr(model_instance, cache_name)
 
         if collection_changed:
@@ -139,7 +139,7 @@ class PositionField(models.IntegerField):
     def __get__(self, instance, owner):
         if instance is None:
             raise AttributeError("%s must be accessed via instance." % self.name)
-        current, updated = getattr(instance, self.get_cached_value())
+        current, updated = getattr(instance, self.get_cache_name())
         return current if updated is None else updated
 
     def __set__(self, instance, value):
@@ -148,7 +148,9 @@ class PositionField(models.IntegerField):
         if value is None:
             value = self.default
 
-        cache_name = self.get_cached_value()
+        dir(self)
+        
+        cache_name = self.get_cache_name()
 
         try:
             current, updated = getattr(instance, cache_name)
@@ -181,7 +183,7 @@ class PositionField(models.IntegerField):
         Returns the next sibling of this instance.
         """
         try:
-            return self.get_collection(instance).filter(**{'%s__gt' % self.name: getattr(instance, self.get_cached_value())[0]})[0]
+            return self.get_collection(instance).filter(**{'%s__gt' % self.name: getattr(instance, self.get_cache_name())[0]})[0]
         except:
             return None
 
@@ -190,7 +192,7 @@ class PositionField(models.IntegerField):
         Removes a positioned item from the collection.
         """
         queryset = self.get_collection(instance)
-        current = getattr(instance, self.get_cached_value())[0]
+        current = getattr(instance, self.get_cache_name())[0]
         updates = {self.name: models.F(self.name) - 1}
         if self.auto_now_fields:
             right_now = now()
@@ -215,7 +217,7 @@ class PositionField(models.IntegerField):
                 next_sibling = None
             if next_sibling:
                 queryset = self.get_collection(next_sibling)
-                current = getattr(instance, self.get_cached_value())[0]
+                current = getattr(instance, self.get_cache_name())[0]
                 updates = {self.name: models.F(self.name) - 1}
                 if self.auto_now_fields:
                     right_now = now()
@@ -228,7 +230,7 @@ class PositionField(models.IntegerField):
         collection_changed = self._collection_changed
         self._collection_changed = None
 
-        current, updated = getattr(instance, self.get_cached_value())
+        current, updated = getattr(instance, self.get_cache_name())
 
         if updated is None and not collection_changed:
             return None
@@ -258,7 +260,7 @@ class PositionField(models.IntegerField):
             updates[self.name] = models.F(self.name) + 1
 
         queryset.update(**updates)
-        setattr(instance, self.get_cached_value(), (updated, None))
+        setattr(instance, self.get_cache_name(), (updated, None))
 
     def south_field_triple(self):
         from south.modelsinspector import introspector
