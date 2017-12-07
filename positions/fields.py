@@ -148,7 +148,9 @@ class PositionField(models.IntegerField):
         if value is None:
             value = self.default
 
-        dir(self)
+        from pprint import pprint
+        fly = dir(self)
+        pprint(fly)
         
         cache_name = self.get_cache_name()
 
