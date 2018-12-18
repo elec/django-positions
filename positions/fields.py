@@ -49,7 +49,6 @@ class PositionField(models.IntegerField):
     def get_cache_name(self):
         return '_%s_cache' % self.name
 
-
     def contribute_to_class(self, cls, name):
         super(PositionField, self).contribute_to_class(cls, name)
         for constraint in cls._meta.unique_together:
